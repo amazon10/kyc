@@ -9,12 +9,12 @@
         <version>2.1.8.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.javaboy</groupId>
-    <artifactId>vhr</artifactId>
+    <groupId>com.kyc</groupId>
+    <artifactId>kyc-manager</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>vhrserver</module>
+        <module>kycserver</module>
         <module>mailserver</module>
     </modules>
 

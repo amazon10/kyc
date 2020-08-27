@@ -3,19 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>vhr</artifactId>
-        <groupId>org.javaboy</groupId>
+        <artifactId>kyc-manager</artifactId>
+        <groupId>com.kyc</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>vhrserver</artifactId>
+    <artifactId>kycserver</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>vhr-mapper</module>
-        <module>vhr-model</module>
-        <module>vhr-service</module>
-        <module>vhr-web</module>
+        <module>kyc-mapper</module>
+        <module>kyc-model</module>
+        <module>kyc-service</module>
+        <module>kyc-web</module>
     </modules>
 
 
