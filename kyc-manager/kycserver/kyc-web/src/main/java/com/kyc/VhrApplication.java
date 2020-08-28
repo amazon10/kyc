@@ -8,12 +8,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableCaching
-@MapperScan(basePackages = "org.javaboy.vhr.mapper")
+@MapperScan(basePackages = "com.kyc.mapper")
 @EnableScheduling
-public class VhrApplication {
+public class KycApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(VhrApplication.class, args);
+        SpringApplication.run(KycApplication.class, args);
     }
 
 }
