@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.customer.CustomerMapper">
+    <resultMap id="CustomerResultMap" type="com.kyc.model.customer.Customer">
+        <id column="customerId" property="customerId" jdbcType="INTEGER"/>
+        <result column="customerCode" property="customerCode" jdbcType="VARCHAR"/>
+        <result column="industry" property="industry" jdbcType="VARCHAR"/>
+        <result column="area" property="area" jdbcType="VARCHAR"/>
+        <result column="customerType" property="customerType" jdbcType="BIT"/>
+        <result column="customerLevel" property="customerLevel" jdbcType="BIT"/>
+        <result column="recogStatus" property="recogStatus" jdbcType="BIT"/>
+        <result column="channel" property="channel" jdbcType="BIT"/>
+        <result column="createTime" property="createTime" jdbcType="VARCHAR"/>
+        <result column="updateTime" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="pushStatus" property="pushStatus" jdbcType="BIT"/>
+        <result column="customerStatus" property="customerStatus" jdbcType="BIT"/>
+        <result column="customerMode" property="customerMode" jdbcType="BIT"/>
+        <result column="uploadFile" property="updateFile" jdbcType="BLOB"/>
+   <!-- </resultMap>
+    <resultMap id="CustomerInfoResultMap" type="com.kyc.model.customer.CustomerInfo">-->
+        <result column="customerInfoId" property="customerInfoId" jdbcType="INTEGER"/>
+        <result column="bussinessLicense" property="bussinessLicense" jdbcType="BLOB"/>
+        <result column="uscCode" property="uscCode" jdbcType="VARCHAR"/>
+        <result column="startTime" property="startTime" jdbcType="VARCHAR"/>
+        <result column="endTime" property="endTime" jdbcType="VARCHAR"/>
+        <result column="longTerm" property="longTerm" jdbcType="BIT"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="district" property="district" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="idType" property="idType" jdbcType="BIT"/>
+        <result column="idFront" property="idFront" jdbcType="BLOB"/>
+        <result column="idBack" property="idBack" jdbcType="BLOB"/>
+        <result column="telNum" property="telNum" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="BIT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="attachment" property="attachment" jdbcType="BLOB"/>
+    </resultMap>
+
+    <sql id="KycCustomerSql">
+        customerId, customerCode, industry, area, customerType, customerLvel, recogStatus, channel, createTime, updateTime,
+        pushStatus, customerStatus, customerMode, uploadFile, customerInfoId, bussinessLicense, uscCode, startTime, endTime,
+        longTerm, province, city, district, address, idType, idFront, idBack, telNum, sex, remark, attachment
+    </sql>
+
+    <select id="listCustomers" parameterMap="com.kyc.model.customer.KycCustomer" resultMap="CustomerResultMap">
+        select kc.id customerId, kc.customerCode customerCode, kc.industry industry, kc.area area, kc.customerType customerType, kc.customerLevel customerLevel,
+        kc.recogStatus recogStatus, kc.channel channel, kc.createTime createTime, kc.updateTime updateTime, kc.pushStatus pushStatus, kc.customerStatus customerStatus,
+        kc.customerMode customerMode, kc.uploadFile uploadFile, kci.id customerInfoId, kci.bussinessLicense bussinessLicense, kci.uscCode uscCode, kci.startTime startTime,
+        kci.endTime endTime, kci.longTerm longTerm, kci.province province, kci.city city, kci.district district, kci.idType idType, kci.idFront idFront, kci.idBack idBack,
+        kci.telNum telNum, kci.sex sex, kci.remark remark, kci.attachment from kyc_customer kc left join kyc_customer_relation kcr left join kyc_customer_info kci on
+        kc.id=kcr.customerId and kcr.customerInfoId=kci.id where 1=1 and kc.pushStatus='1'
+        <if test="kycCustomer!=null">
+            <if test="kycCustomer.customer!=null">
+                <if test="kycCustomer.customer.customerCode!=null and kycCustomer.customer.customerCode!=''">
+                    and kc.customerCode = #{kycCustomer.customer.customerCode}
+                </if>
+                <if test="kycCustomer.customer.customerName!=null and kycCustomer.customer.customerName!=''">
+                    and kc.customerName like concat('%', #{kycCustomer.customer.customerName}, '%')
+                </if>
+                <if test="kycCustomer.customer.area!=null and kycCustomer.customer.area!=''">
+                    and kyc.area = #{kycCustomer.customer.area}
+                </if>
+                <if test="kycCustomer.customer.industry!=null and kycCustomer.customer.industry!=''">
+                    and kyc.industry = #{kycCustomer.customer.industry}
+                </if>
+                <if test="kycCustomer.customer.customerLevel!=null and kycCustomer.customer.customerLevel!''">
+                    and kyc.customerLevel = #{kycCustomer.customer.customerLevel}
+                </if>
+                <if test="kycCustomer.customer.customerType!=null and kycCustomer.customer.customerLevel!=''">
+                    and kyc.customerType = #{kycCustomer.customer.customerType}
+                </if>
+                <if test="kycCustomer.customer.recogStatus!=null and kycCustomer.customer.recogStatus!=''">
+                    and kyc.recogStatus = #{kycCustomer.customer.recogStatus}
+                </if>
+                <if test="kycCustomer.customer.channel!=null and kycCustomer.customer.channel!=''">
+                    and kyc.channel = #{kycCustomer.customer.channel}
+                </if>
+                <if test="kycCustomer.customer.createTime!=null and kycCustomer.customer.createTime!=''">
+                    and kyc.createTime = #{kycCustomer.customer.createTime}
+                </if>
+            </if>>
+            <if test="kycCustomer.customerInfo!=null">
+                <if test="kycCustomer.customerInfo.idNum!=null and kycCustomer.customerInfo.idNum!=''">
+                    and kci.idNum = #{kycCustomer.customerInfo.idNum}
+                </if>
+            </if>
+        </if>
+    </select>
+
+    <select id="listDraftCustomers" parameterMap="com.kyc.model.customer.KycCustomer" resultMap="CustomerResultMap">
+        select kc.id customerId, kc.customerCode customerCode, kc.industry industry, kc.area area, kc.customerType customerType, kc.customerLevel customerLevel,
+        kc.recogStatus recogStatus, kc.channel channel, kc.createTime createTime, kc.updateTime updateTime, kc.pushStatus pushStatus, kc.customerStatus customerStatus,
+        kc.customerMode customerMode, kc.uploadFile uploadFile, kci.id customerInfoId, kci.bussinessLicense bussinessLicense, kci.uscCode uscCode, kci.startTime startTime,
+        kci.endTime endTime, kci.longTerm longTerm, kci.province province, kci.city city, kci.district district, kci.idType idType, kci.idFront idFront, kci.idBack idBack,
+        kci.telNum telNum, kci.sex sex, kci.remark remark, kci.attachment from kyc_customer kc left join kyc_customer_relation kcr left join kyc_customer_info kci on
+        kc.id=kcr.customerId and kcr.customerInfoId=kci.id where 1=1 and kc.pushStatus='0'
+        <if test="kycCustomer!=null">
+            <if test="kycCustomer.customer!=null">
+                <if test="kycCustomer.customer.customerCode!=null and kycCustomer.customer.customerCode!=''">
+                    and kc.customerCode = #{kycCustomer.customer.customerCode}
+                </if>
+                <if test="kycCustomer.customer.customerName!=null and kycCustomer.customer.customerName!=''">
+                    and kc.customerName like concat('%', #{kycCustomer.customer.customerName}, '%')
+                </if>
+                <if test="kycCustomer.customer.area!=null and kycCustomer.customer.area!=''">
+                    and kyc.area = #{kycCustomer.customer.area}
+                </if>
+                <if test="kycCustomer.customer.industry!=null and kycCustomer.customer.industry!=''">
+                    and kyc.industry = #{kycCustomer.customer.industry}
+                </if>
+                <if test="kycCustomer.customer.customerLevel!=null and kycCustomer.customer.customerLevel!''">
+                    and kyc.customerLevel = #{kycCustomer.customer.customerLevel}
+                </if>
+                <if test="kycCustomer.customer.customerType!=null and kycCustomer.customer.customerLevel!=''">
+                    and kyc.customerType = #{kycCustomer.customer.customerType}
+                </if>
+                <if test="kycCustomer.customer.recogStatus!=null and kycCustomer.customer.recogStatus!=''">
+                    and kyc.recogStatus = #{kycCustomer.customer.recogStatus}
+                </if>
+                <if test="kycCustomer.customer.channel!=null and kycCustomer.customer.channel!=''">
+                    and kyc.channel = #{kycCustomer.customer.channel}
+                </if>
+                <if test="kycCustomer.customer.createTime!=null and kycCustomer.customer.createTime!=''">
+                    and kyc.createTime = #{kycCustomer.customer.createTime}
+                </if>
+            </if>>
+            <if test="kycCustomer.customerInfo!=null">
+                <if test="kycCustomer.customerInfo.idNum!=null and kycCustomer.customerInfo.idNum!=''">
+                    and kci.idNum = #{kycCustomer.customerInfo.idNum}
+                </if>
+            </if>
+        </if>
+    </select>
+    
+    <select id="selectCustomerMeta">
+        select * from kyc_customer limit 1
+    </select>
+
+    <select id="selectCustomerInfoMeta">
+        select * from kyc_customer_info limit 1
+    </select>
+
+    <insert id="addCustomer" parameterMap="com.kyc.model.customer.Customer">
+        insert into kyc_customer (`customerCode`, `customerName`, `industry`, `area`, `customerType`, `customerLevel`, `recogStatus`, `channel`,
+        `createTime`, `updateTime`, `pushStatus`, `customerStatus`, `uploadFile`) values
+         <foreach collection="customers" item="customer" separator=",">
+             (#{customer.customerCode}, #{customer.customerName}, #{customer.industry}, #{customer.area}, #{customer.customerType},
+             #{customer.customerLevel}, #{customer.recogStatus}, #{customer.channel}, #{customer.createTime}, #{customer.updateTime},
+             #{customer.pushStatus}, #{customer.customerStatus}, #{customer.uploadFile})
+         </foreach>
+
+    </insert>
+
+    <insert id="addCustomerInfo" parameterMap="com.kyc.model.customer.CustomerInfo">
+        insert into kyc_customer_info (`bussinessLicense`, `uscCode`, `startTime`, `endTime`, `longTerm`, `province`, `city`, `district`,
+        `address`, `idType`, `idFront`, `idBack`, `telNum`, `sex`, `remark`, `attachment`) values
+        <foreach collection="customerInfos" item="customerInfo" separator=",">
+        (#{customerInfo.bussinessLecense}, #{customerInfo.uscCode}, #{customerInfo.startTime}, #{customerInfo.endTime}, #{customerInfo.longTerm},
+        #{customerInfo.province}, #{customerInfo.city}, #{customerINfo.district}, #{customerInfo.address}, #{customerInfo.idType},
+        #{customerInfo.idFront}, #{customerInfo.idBack}, #{customerInfo.telNum}, #{customerInfo.sex}, #{customerInfo.remark}, #{customerInfo.attachment})
+        </foreach>
+    </insert>
+
+</mapper>

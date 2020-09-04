@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.OrgMapper">
+    <resultMap id="OrgResultMap" type="com.kyc.model.system.Org">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="orgCode" property="orgCode" jdbcType="VARCHAR" />
+        <result column="orgName" property="orgName" jdbcType="VARCHAR" />
+        <result column="orgType" property="orgTpe" jdbcType="CHAR" />
+        <result column="orgArea" property="orgArea" jdbcType="VARCHAR" />
+        <result column="orgAddress" property="orgAddress" jdbcType="VARCHAR" />
+        <result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <select id="listOrgs" resultMap="OrgResultMap">
+        select * from kyc_org where 1=0
+        <if test="org!=null">
+            OR (
+                1 = 1
+                <if test="org.getOrgName()!=null and org.getOrgName()!=''">
+                    and orgName like #{org.orgName()}
+                </if>
+                <if test="org.getOrgCode()!=null and org.getOrgCode()!=''">
+                    and orgCode = #{org.orgCode()}
+                </if>
+                <if test="org.getOrgType()!=null and org.getOrgType()!=''">
+                    and orgType = #{org.orgType()}
+                </if>
+                <if test="org.getOrgArea()!=null and org.getOrgArea()!=''">
+                    and orgArea = #{org.orgArea()}
+                </if>
+            )
+        </if>
+    </select>
+
+    <insert id="addOrgList" parameterMap="com.kyc.model.system.Org">
+        insert into kyc_org (`orgCode`, `orgName`, `orgType`, `orgArea`, `orgAddress`, `updateTime`, `remark`) values
+        <foreach collection="list" separator="," item="org">
+            (#{org.orgCode}, #{org.orgName}, #{org.orgType}, #{org.orgArea}, #{org.orgAddress}, #{org.updateTime}, #{org.remark})
+        </foreach>
+    </insert>
+
+    <delete id="deleteOrgById" parameterMap="java.lang.Integer">
+        delete from kyc_org where id in
+        <foreach collection="list" separator="," item="orgId" open="(" close=")">
+            #{orgId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteUserByOrgId" parameterMap="java.lang.Integer">
+        delete from kyc_user_org where orgId in
+        <foreach collection="list" separator="," item="orgId" open="(" close=")">
+            #{orgId}
+        </foreach>
+    </delete>
+
+    <update id="updateOrg" parameterMap="com.kyc.model.system.Org">
+        update kyc_org
+        <trim prefix="set" suffixOverrides=",">
+            <if test="org.orgCode!=null and org.orgCode!=''">
+                orgCode = #{org.orgCode}
+            </if>
+            <if test="org.orgName!=null and org.orgName!=''">
+                orgName = #{org.orgName}
+            </if>
+            <if test="org.orgType!=null and org.orgType!=''">
+                orgType = #{org.orgType}
+            </if>
+            <if test="org.orgArea!=null and org.orgArea!=''">
+                orgArea = #{org.orgArea}
+            </if>
+            <if test="org.orgAddress!=null and org.orgAddress!=''">
+                orgAddress = #{org.orgAddress}
+            </if>
+            <if test="org.updateTime!=null and org.updateTime!''">
+                updateTime = #{org.updateTime}
+            </if>
+            <if test="org.remark!=null and org.remark!=''">
+                remark = #{org.remark}
+            </if>
+        </trim>
+        where id = #{org.id}
+    </update>
+</mapper>

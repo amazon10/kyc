@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.RoleMapper">
+    <resultMap id="RoleResultMap" type="com.kyc.model.system.Role">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="namezh" property="namezh" jdbcType="VARCHAR" />
+        <result column="desc" property="desc" jdbcType="CHAR" />
+        <result column="attr" property="attr" jdbcType="VARCHAR" />
+        <result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="listRoles" resultMap="RoleResultMap">
+        select * from kyc_role where 1=1
+        <if test="role!=null">
+            <if test="role.name!=null and role.name!=''">
+                and name like #{role.name}
+            </if>
+            <if test="role.attr!=null and role.attr!=''">
+                and attr = #{role.attr}
+            </if>
+            <if test="role.updateTime!=null and role.updateTime!=''">
+                and updateTime $gt; #{role.updateTime}
+            </if>
+        </if>
+    </select>
+
+    <insert id="addRole" parameterMap="com.kyc.model.system.Role">
+        insert into kyc_role (`namezh`, `desc`, `attr`, `updateTime`, `name`) values
+        <foreach collection="list" separator="," item="role">
+            (#{role.namezh}, #{role.desc}, #{role.attr}, #{role.updateTime}, #{role.name})
+        </foreach>
+    </insert>
+
+    <delete id="deleteRoleById" parameterMap="java.lang.Integer">
+        delete from kyc_role where roleId=#{roleId}
+    </delete>
+
+    <update id="updateRole" parameterMap="com.kyc.model.system.Role">
+        update kyc_role
+        <trim prefix="set" suffixOverrides=",">
+            <if test="role.namezh!=null and role.namezh!=''">
+                namezh = #{role.namezh}
+            </if>
+            <if test="role.desc!=null and role.desc!=''">
+                desc = #{role.desc}
+            </if>
+            <if test="role.attr!=null and role.attr!=''">
+                attr = #{role.attr}
+            </if>
+            <if test="role.updateTime!=null and role.updateTime!=''">
+                updateTime = #{role.updateTime}
+            </if>
+            <if test="role.name!=null and role.name!=''">
+                name = #{role.name}
+            </if>
+        </trim>
+        <where>
+            id = #{org.id}
+        </where>
+    </update>
+</mapper>

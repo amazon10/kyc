@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.UserMapper">
+    <resultMap id="UserResultMap" type="com.kyc.model.system.User">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="userCode" property="userCode" jdbcType="VARCHAR" />
+        <result column="userNum" property="userNum" jdbcType="VARCHAR" />
+        <result column="userName" property="userName" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="userStaus" property="userStatus" jdbcType="CHAR" />
+        <result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+        <result column="enabled" property="enabled" jdbcType="BIT" />
+    </resultMap>
+    
+    <resultMap id="UserWithRole" type="com.kyc.model.system.User" extends="UserResultMap">
+        <collection property="roles" ofType="com.kyc.model.system.Role">
+            <id column="id" property="id" />
+            <result column="rname" property="name" />
+            <result column="rnamezh" property="namezh" />
+            <result column="rdesc" property="desc" />
+            <result column="rattr" property="attr" />
+            <result column="rupdateTime" property="updateTime" />
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, userCode, userNum, username, password, userStatus, updateTime, enabled
+    </sql>
+
+    <select id="loadUserByUsername" resultMap="UserResultMap">
+        select * from kyc_user where userName=#{userName};
+    </select>
+
+    <select id="getUserRoleById" resultMap="com.kyc.model.system.Role">
+        select r.* from kyc_role r, kyc_user_role hrr where hrr.`roleId`=r.`id` and hrr.`userId`=#{id}
+    </select>
+
+    <select id="getAllUsers" resultMap="UserWithRole">
+        select hr.id, hr.userCode, hr.userNum, hr.userName, hr.userStatus, hr.updateTime, hr.enabled,
+        r.`id` as roleId,r.`name` as rname,r.`namezh` as rnamezh from kyc_user hr left join kyc_hr_role hrr on
+        hr.`id`=hrr.`userId` left join kyc_role r on hrr.`roleId`=r.`id` where hr.`id`!=#{userId}
+        <if test="keywords!=null">
+            and hr.name like concat('%',#{keywords},'%')
+        </if>
+        order by hr.id
+    </select>
+
+    <update id="updateUser" parameterType="com.kyc.model.system.User">
+        update kyc_user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="user.userCode!=null">
+                userCode = #{user.userCode}
+            </if>
+            <if test="user.userNum!=null">
+                userNum = #{user.userNum}
+            </if>
+            <if test="user.userName!=null">
+                userName = #{user.userName}
+            </if>
+            <!--<if test="user.password!=null">
+                password = #{user.password}
+            </if>-->
+            <if test="user.updateTime!=null">
+                updateTime = #{user.updateTime}
+            </if>
+            <if test="user.enabled!=null">
+                enabled = #{user.enabled}
+            </if>
+        </trim>
+        where id = #{user.id, jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from kyc_user_role
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <select id="getAllHrsExceptCurrentUser" resultMap="UserResultMap">
+        select * from kyc_user where id != #{userId};
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+            <include refid="Base_Column_List"/>
+        from kyc_user
+        where id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <update id="updatePasswd">
+        update kyc_user set password = #{encodePass} where id=#{userId};
+    </update>
+
+    <delete id="deleteUserByOrgId" parameterMap="java.lang.Integer">
+        delete from kyc_user where id in (select userId from kyc_user_org where orgId in
+        <foreach collection="list" item="orgId" separator="," open="(" close=")">
+            #{orgId}
+        </foreach>/*
+        and id != #{userId})*/
+    </delete>
+
+    <insert id="addUser" parameterMap="com.kyc.model.system.User">
+        insert into kyc_user (`userCode`, `userNum`, `userName`, `password`, `userStatus`, `updateTime`, `enabled`) values 
+        <foreach collection="userList" item="user" separator=",">
+            (#{user.userCode}, #{user.userNum}, #{user.userName}, #{user.password}, #{user.userStatus}, #{user.updateTime}, #{user.enabled})
+        </foreach>
+    </insert>
+
+    <insert id="addOrgWithUser" parameterMap="com.kyc.model.system.User">
+        insert into kyc_user_org (`orgId`, `userId`) values
+        <foreach collection="userList" item="user" separator=",">
+            (#{user.orgId}, #{user.id})
+        </foreach>
+    </insert>
+
+    <delete id="deleteUser" parameterMap="java.lang.Integer">
+        delete from kyc_user where id in
+        <foreach collection="list" item="userId" separator="," open="(" close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteOrgWithUser" parameterMap="java.lang.Integer">
+        delete from kyc_user_org where userId in
+        <foreach collection="list" item="userId" separator="," open="(" close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <update id="updateOrgWithUser">
+        update kyc_user_org
+        <set>
+            orgId = #{orgId}
+        </set>
+        where userId = #{userId}
+    </update>
+    
+    <select id="listUser" parameterMap="com.kyc.model.system.User">
+        select 
+        <include refid="Base_Column_List" />
+        from kyc_user;
+    </select>
+</mapper>

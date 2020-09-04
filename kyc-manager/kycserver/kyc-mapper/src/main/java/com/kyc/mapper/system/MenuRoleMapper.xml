@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.MenuRoleMapper">
+    <resultMap id="BaseResultMap" type="com.kyc.model.system.MenuRole">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="menuId" property="menuId" jdbcType="INTEGER"/>
+        <result column="roleId" property="roleId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <delete id="deleteByRid">
+        delete from kyc_menu_role where roleId=#{roleId}
+    </delete>
+
+    <insert id="insertRecord">
+        insert into kyc_menu_role (menuId, roleId) values
+        <foreach collection="mids" separator="," item="mid">
+            (#{mid},#{rid})
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.LogRecordMapper">
+    <resultMap id="LogRecordResultMap" type="com.kyc.model.system.LogRecord">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="logContent" property="logContent" jdbcType="VARCHAR"/>
+        <result column="loginId" property="loginId" jdbcType="VARCHAR"/>
+        <result column="loginTime" property="loginTime" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="LogRecordSql">
+        id, username, logContent, loginId, loginTime
+    </sql>
+
+    <select id="listLogRecords" parameterMap="com.kyc.model.system.LogRecord" resultMap="LogRecordResultMap">
+        select <include refid="LogRecordSql"/> from kyc_log where 1=1
+        <if test="log!=null">
+            <if test="log.username!=null and log.username!=''">
+                and username = #{log.username}
+            </if>
+             <if test="log.startTime!=null and log.startTime!=''">
+                 and loginTime &gt; #{log.startTime}
+             </if>
+             <if test="log.endTime!=null and log.endTime!=''">
+                 and loginTime &lt; #{log.endTime}
+             </if>
+        </if>
+    </select>
+
+    <insert id="addLogRecord" parameterMap="com.kyc.model.system.LogRecord">
+        insert into kyc_log (`username`, `logContent`, `loginId`, `loginTime`) value (#{log.username}, #{log.logContent}, #{log.loginId}, #{log.loginTime})
+    </insert>
+</mapper>

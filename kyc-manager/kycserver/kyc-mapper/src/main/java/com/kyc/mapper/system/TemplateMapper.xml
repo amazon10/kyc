@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.TemplateMapper">
+    <resultMap id="TemplateResultMap" type="com.kyc.model.system.Template">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="templateCode" property="templateCode" jdbcType="VARCHAR" />
+        <result column="templateName" property="templateName" jdbcType="VARCHAR" />
+        <result column="createTime" property="createTime" jdbcType="VARCHAR" />
+        <result column="createUser" property="createUser" jdbcType="VARCHAR" />
+        <result column="templateStatus" property="templateStatus" jdbcType="BIT" />
+        <result column="enableTime" property="enableTime" jdbcType="VARCHAR" />
+        <result column="disableTime" property="disableTime" jdbcType="VARCHAR" />
+        <result column="templateMode" property="templateMode" jdbcType="BIT" />
+        <result column="channel" property="channel" jdbcType="VARCHAR" />
+        <result column="idLegalPerson" property="idLegalPerson" jdbcType="VARCHAR" />
+        <result column="idRespPerson" property="idRespPerson" jdbcType="VARCHAR" />
+        <result column="idAssInd" property="idAssInd" jdbcType="VARCHAR" />
+        <result column="idAssOther" property="idAssOther" jdbcType="VARCHAR" />
+        <result column="deepQuery" property="deepQuery" jdbcType="VARCHAR" />
+        <result column="assPenetrate" property="assPenetrate" jdbcType="VARCHAR" />
+        <result column="recogPipeline" property="recogPipeline" jdbcType="VARCHAR" />
+        <result column="scanComMain" property="scanComMain" jdbcType="VARCHAR" />
+        <result column="scanComMain1" property="scanComMain1" jdbcType="VARCHAR" />
+        <result column="scanLegalPerson" property="scanLegalPerson" jdbcType="VARCHAR" />
+        <result column="scanRespPerson" property="scanRespPerson" jdbcType="VARCHAR" />
+        <result column="scanAssInd" property="scanAssInd" jdbcType="VARCHAR" />
+        <result column="scanAssOther" property="scanAssOther" jdbcType="VARCHAR" />
+        <result column="scanAssCompany" property="scanAssCompany" jdbcType="VARCHAR" />
+        <result column="requireScene" property="requireScene" jdbcType="BIT" />
+        <result column="idInfoVerify" property="idInfoVerify" jdbcType="VARCHAR" />
+        <result column="idAspirationVerify" property="idAspirationVerify" jdbcType="VARCHAR" />
+        <result column="scanWriteList" property="scanWhiteList" jdbcType="VARCHAR" />
+        <result column="scanBlackList" property="scanBlackList" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="listTemplates" resultMap="TemplateResultMap">
+        select * from kyc_template where 1=1
+        <if test="template!=null">
+            <if test="template.templateName!=null and template.templateName!=''">
+                and templateName like #{template.templateName}
+            </if>
+            <if test="template.templateStatus!=null and template.templateStatus!=''">
+                and templateStatus = #{template.templateStatus}
+            </if>
+        </if>
+    </select>
+
+    <insert id="addTemplates" parameterMap="com.kyc.model.system.Template">
+        insert into kyc_template (`templateCode`, `templateName`, `createTime`, `createUser`, `templateStatus`, `enableTime`, `disableTime`, `templateMode`,
+         `channel`, `idLegalPerson`, `idRespPerson`, `idAssInd`, `idAssOther`, `deepQuery`, `assPenetrate`, `recogPipeline`, `scanComMain`, `scanComMain1`,
+         `scanLegalPerson`, `scanRespPerson`, `scanAssInd`, `scanAssOther`, `scanAssCompany`, `requireScene`, `idInfoVerify`, `idAspirationVerify`, `scanWhiteList`, `scanBlackList`) values
+        <foreach collection="list" separator="," item="template">
+            (#{template.templateCode}, #{template.templateName}, #{template.createTime}, #{template.createUser}, #{template.templateStatus}, #{template.enableTime},
+            #{template.disableTime}, #{template.templateMode}, #{template.channel}, #{template.idLegalPerson}, #{template.idRespPerson}, #{template.idAssInd}, #{template.idAssOther},
+            #{template.deepQuery}, #{template.assPenetrate}, #{template.recogPipeline}, #{template.scanComMain}, #{template.scanComMain1}, #{template.scanLegalPerson}, #{template.scanRespPerson},
+            #{template.scanAssInd}, #{template.scanAssOther}, #{template.scanAssCompany}, #{template.requireScene}, #{template.idInfoVerify}, #{template.idAspirationVerify},
+            #{template.scanWhiteList}, #{template.scanBlackList})
+        </foreach>
+    </insert>
+
+    <update id="templateStatus" parameterMap="java.lang.String">
+        update kyc_template
+        <set>
+            templateStatus = #{status}
+            <if test="enableTime!=null and enableTime!=''">
+                and enableTime = #{enableTime}
+            </if>
+            <if test="disableTime!=null and disableTime!=''">
+                and disableTime = #{disableTime}
+            </if>
+        </set>
+    </update>
+</mapper>

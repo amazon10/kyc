@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.DictionaryMapper">
+    <resultMap id="DictionaryResultMap" type="com.kyc.model.system.Dictionary">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="field" property="field" jdbcType="VARCHAR"/>
+        <result column="fieldName" property="fieldName" jdbcType="VARCHAR"/>
+        <result column="fieldType" property="fieldType" jdbcType="VARCHAR"/>
+        <result column="fieldSource" property="fieldSource" jdbcType="VARCHAR"/>
+        <result column="dataLen" property="dataLen" jdbcType="INTEGER"/>
+        <result column="primaryKey" property="primaryKey" jdbcType="BIT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="DictionarySql">
+        id, field, fieldName, fieldType, fieldSource, dataLen, primaryKey, remark
+    </sql>
+
+    <select id="listDictionaries" parameterMap="com.kyc.model.system.Dictionary" resultMap="DictionaryResultMap">
+        select <include refid="DictionarySql"/> from kyc_dic where 1=1
+        <if test="dic!=null">
+            <if test="dic.fieldName!=null and dic.fieldName!=''">
+                and fieldName = #{dic.fieldName}
+            </if>
+             <if test="dic.fieldSource!=null and dic.fieldSource!=''">
+                 and fieldSource = #{dic.fieldSource}
+             </if>
+             <if test="dic.fieldType!=null and dic.fieldType!''">
+                 and fieldType = #{dic.fieldType}
+             </if>
+        </if>
+    </select>
+
+    <update id="updateDicRemark">
+        update kyc_dic
+        <set>
+            remark=#{remark}
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

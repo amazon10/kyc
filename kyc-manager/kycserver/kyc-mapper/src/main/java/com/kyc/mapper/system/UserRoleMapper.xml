@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.UserRoleMapper">
+    <resultMap id="UserRoleResultMap" type="com.kyc.model.system.UserRole">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="roleId" property="roleId" jdbcType="INTEGER" />
+        <result column="userId" property="userId" jdbcType="INTEGER" />
+    </resultMap>
+    
+    <sql id="BASE_COLUMN_LIST">
+        id, roleId, userId
+    </sql>
+
+    <insert id="addRole">
+        insert into kyc_user_role (userId,roleId) values
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{userId},#{roleId})
+        </foreach>
+    </insert>
+
+    <select id="selectUserByRoleId" parameterMap="java.lang.Integer">
+        select `userId` from kyc_user_role where roleId=#{roleId}
+    </select>
+
+    <delete id="deleteRoleWithUser" parameterMap="java.lang.Integer">
+        delete from kyc_user_role where userId in
+        <foreach collection="list" item="userId" separator="," open="(" close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByUserid" parameterMap="java.lang.Integer">
+        delete from kyc_user_role where userId = #{userId}
+    </delete>
+</mapper>

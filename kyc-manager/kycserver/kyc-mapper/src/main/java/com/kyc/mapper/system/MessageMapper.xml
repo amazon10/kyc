@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.system.MessageMapper">
+    <resultMap id="MessageResultMap" type="com.kyc.model.system.Message">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="msgDesc" property="msgDesc" jdbcType="VARCHAR"/>
+        <result column="msgSource" property="msgSource" jdbcType="VARCHAR"/>
+        <result column="pushTime" property="pushTime" jdbcType="VARCHAR"/>
+        <result column="customerCode" property="customer" jdbcType="VARCHAR"/>
+        <result column="msgLevel" property="msgLevel" jdbcType="BIT"/>
+        <result column="processStatus" property="processStatus" jdbcType="BIT"/>
+        <result column="consultStatus" property="consultStatus" jdbcType="BIT"/>
+    </resultMap>
+
+    <select id="listMessages" parameterMap="com.kyc.model.system.Message">
+        select * form kyc_msg where 1=1
+        <if test="message!=null">
+            <if test="message.consultStatus!=null and message.consultStatus!=''">
+                and consultStatus = #{message.consultStatus}
+            </if>
+            <if test="message.processStatus!=null and message.processStatus!=''">
+                and processStatus = #{message.processStatus}
+            </if>
+            <if test="message.msgSource!=null and message.msgSource!=''">
+                and msgSource = #{message.msgSource}
+            </if>
+            <if test="message.msgLevel!=null and message.msgLevel!=''">
+                and msgLevel = #{message.msgLevel}
+            </if>
+            <if test="message.startTime!=null and message.startTime!=''">
+                and pushTime &gt; #{message.startTime}
+            </if>
+            <if test="message.endTime!=null and message.endTime!=''">
+                and pushTime &lt; #{message.endTime}
+            </if>
+        </if>
+    </select>
+
+    <update id="updateMark">
+        update kyc_msg
+        <set>
+            <if test="message!=null">
+                <if test="message.msgLevel!=null and message.msgLevel!=''">
+                    msgLevel = #{message.msgLevel}
+                </if>
+                <if test="message.processStatus!=null and message.processStatus!=''">
+                    processStatus = #{message.processStatus}
+                </if>
+                <if test="message.consultStatus!=null and message.consultStatus!=''">
+                    consultStatus = #{message.consultStatus}
+                </if>
+            </if>
+        </set>
+        where id in
+        <foreach collection="msgIds" item="msgId" separator="," open="(" close=")">
+            #{msgId}
+        </foreach>
+    </update>
+</mapper>
