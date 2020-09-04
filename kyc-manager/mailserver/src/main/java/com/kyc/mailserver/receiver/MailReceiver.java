@@ -1,7 +1,6 @@
 package com.kyc.mailserver.receiver;
 
 import com.rabbitmq.client.Channel;
-import com.kyc.model.Employee;
 import com.kyc.model.MailConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,7 @@ public class MailReceiver {
 
     @RabbitListener(queues = MailConstants.MAIL_QUEUE_NAME)
     public void handler(Message message, Channel channel) throws IOException {
-        Employee employee = (Employee) message.getPayload();
+        // Employee employee = (Employee) message.getPayload();
         MessageHeaders headers = message.getHeaders();
         Long tag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);
         String msgId = (String) headers.get("spring_returned_message_correlation");
@@ -62,15 +61,15 @@ public class MailReceiver {
         MimeMessage msg = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(msg);
         try {
-            helper.setTo(employee.getEmail());
+            // helper.setTo(employee.getEmail());
             helper.setFrom(mailProperties.getUsername());
             helper.setSubject("入职欢迎");
             helper.setSentDate(new Date());
             Context context = new Context();
-            context.setVariable("name", employee.getName());
+            /*context.setVariable("name", employee.getName());
             context.setVariable("posName", employee.getPosition().getName());
             context.setVariable("joblevelName", employee.getJobLevel().getName());
-            context.setVariable("departmentName", employee.getDepartment().getName());
+            context.setVariable("departmentName", employee.getDepartment().getName());*/
             String mail = templateEngine.process("mail", context);
             helper.setText(mail, true);
             javaMailSender.send(msg);
