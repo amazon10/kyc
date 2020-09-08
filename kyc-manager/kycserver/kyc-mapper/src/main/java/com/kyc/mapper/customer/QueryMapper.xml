@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.customer.QueryMapper">
+    <resultMap id="QueryResultMap" type="com.kyc.model.customer.Query">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="queryCode" property="queryCode" jdbcType="VARCHAR"/>
+        <result column="customerCode" property="customerCode" jdbcType="VARCHAR"/>
+        <result column="queryStatus" property="queryStatus" jdbcType="VARCHAR"/>
+        <result column="queryType" property="queryType" jdbcType="VARCHAR"/>
+        <result column="queryTime" property="queryTime" jdbcType="VARCHAR"/>
+        <result column="processStatus" property="processStatus" jdbcType="VARCHAR"/>
+        <result column="templateCode" property="templateCode" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="QueryListResultMap" type="com.kyc.model.customer.QueryList">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="queryCode" property="queryCode" jdbcType="VARCHAR"/>
+        <result column="verifyMain" property="verifyMain" jdbcType="VARCHAR"/>
+        <result column="templateCode" property="templateCode" jdbcType="VARCHAR"/>
+        <result column="queryRequire" property="queryRequire" jdbcType="VARCHAR"/>
+        <result column="queryDetail" property="queryDetail" jdbcType="VARCHAR"/>
+        <result column="queryStatus" property="queryStatus" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="QueryExceptResultMap" type="com.kyc.model.customer.QueryExcept">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="queryCode" property="queryCode" jdbcType="VARCHAR"/>
+        <result column="exceptHandle" property="exceptHandle" jdbcType="VARCHAR"/>
+        <result column="queryRequire" property="queryRequire" jdbcType="VARCHAR"/>
+        <result column="handleReason" property="handleReason" jdbcType="VARCHAR"/>
+        <result column="attachment" property="attachment" jdbcType="VARCHAR"/>
+        <result column="submitTime" property="submitTime" jdbcType="VARCHAR"/>
+        <result column="requeryCode" property="requeryCode" jdbcType="VARCHAR"/>
+        <result column="requeryResult" property="requeryResult" jdbcType="VARCHAR"/>
+        <result column="sponsor" property="sponsor" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="customerQueryCount">
+        select queryStatus, count(id) from kyc_query group by queryStatus
+    </select>
+    
+    <select id="listCustomerQueryInfo" parameterMap="java.util.Map" resultMap="java.util.Map">
+        select kq.queryCode queriCode, kc.customerCode customerCode, kc.customerName customerName, kc.customerStatus customerStatus,
+        kq.queryStatus queryStatus, kq.queryType queryType, kq.queryTime queryTime, kq.processStatus processStatus from kyc_query kq 
+        join kyc_customer kc on kq.customerCode=kc.customerCode where 1=1
+        <if test="queryCode!=null and queryCode!=''">
+            and kq.queryCode=#{queryCode}
+        </if>
+        <if test="customerCode!=null and customerCode!=''">
+            and kq.customerCode=#{customerCode}
+        </if>
+        <if test="customerName!=null and customerName!=''">
+            and kc.customerName=#{customerName}
+        </if>
+        <if test="industry!=null and industry!=''">
+            and kc.industry=#{industry}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and kc.createTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and kc.createTime &lt; #{endTime}
+        </if>
+        <if test="area!=null and area!=''">
+            and kc.area=#{area}
+        </if>
+        <if test="customerType!=null and customerType!=''">
+            and kc.customerType=#{customerType}
+        </if>
+        <if test="customerLevel!=null and customerLevel!=''">
+            and kc.customerLevel=#{customerLevel}
+        </if>
+        <if test="customerStatus!=null and customerStatus!=''">
+            and kc.customerStatus=#{customerStatus}
+        </if>
+        <if test="channel!=null and channel!=''">
+            and kc.channel=#{channel}
+        </if>
+        <if test="queryStatus!=null and queryStatus!=''">
+            and kq.queryStatus=#{queryStatus}
+        </if>
+        <if test="queryType!=null and queryType!=''">
+            and kq.queryType=#{queryType}
+        </if>
+        <if test="queryTime!=null and queryTime!=''">
+            and kq.queryTime &gt; #{queryTime}
+        </if>
+        <if test="processStatus!=null and processStatus!=''">
+            and kq.processStatus=#{processStatus}
+        </if>
+    </select>
+
+    <insert id="addCustomerQueryInfo" parameterMap="java.util.Map">
+        insert into kyc_query(`queryCode`, `customerCode`, `queryStatus`, `queryType`, `queryTime`, `processStatus`, `templateCode`) value
+        (#{queryCode}, #{customerCode}, #{queryStatus}, #{queryType}, #{queryTime}, #{processStatus}, #{templateCode})
+    </insert>
+    
+    <select id="selectQueryList" parameterMap="java.lang.String" resultMap="java.util.Map">
+        select id, queryCode, verifyMain, templateCode, queryRequire, queryDetail, queryStatus from kyc_query_list where queryCode=#{queryCode}
+    </select>
+
+    <insert id="handleQueryExcept" parameterMap="java.util.Map">
+        insert into kyc_query_except (`queryCode`, `exceptHandle`, `queryRequire`, `handleReason`, `attachment`, `submitTime`, `requeryCode`,
+        `requeryResult`, `sponsor`) value (#{queryCode}, #{exceptHandle}, #{queryRequire}, #{handleReason}, #{attachment}, #{submitTime},
+        #{requeryCode}, #{requeryResult}, #{sponsor})
+    </insert>
+</mapper>

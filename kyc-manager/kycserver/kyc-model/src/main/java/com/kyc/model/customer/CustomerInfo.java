@@ -12,7 +12,7 @@ public class CustomerInfo implements Serializable {
 
     private Integer customerInfoId;
 
-    private Blob bussinessLicense;
+    private String bussinessLicense;
 
     private String uscCode;
 
@@ -34,7 +34,7 @@ public class CustomerInfo implements Serializable {
 
     private String idNum;
 
-    private Blob idFront;
+    private String idFront;
 
     private Block idBack;
 
@@ -44,5 +44,7 @@ public class CustomerInfo implements Serializable {
 
     private String remark;
 
-    private Blob attachment;
+    private String attachment;
+
+    private String name;
 }

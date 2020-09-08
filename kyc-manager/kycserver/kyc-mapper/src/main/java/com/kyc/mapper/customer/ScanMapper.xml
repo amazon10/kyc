@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.customer.ScanMapper">
+
+    <resultMap id="ScanResultMap" type="com.kyc.model.customer.Scan">
+        <id column="scanId" property="scanId"/>
+        <result column="scanCode" property="scanCode"/>
+        <result column="customerCode" property="customerCode"/>
+        <result column="scanStatus" property="scanStatus"/>
+        <result column="scanTime" property="scanTime"/>
+        <result column="scanResult" property="scanResult"/>
+        <result column="processStatus" property="processStatus"/>
+        <result column="scanListType" property="scanListType"/>
+        <result column="templateCode" property="templateCode"/>
+        <result column="uscCode" property="uscCode"/>
+        <result column="idNum" property="idNum"/>
+    </resultMap>
+
+    <resultMap id="ScanListResultMap" type="com.kyc.model.customer.ScanList">
+        <id column="scanListId" property="scanListId"/>
+        <result column="scanMain" property="scanMain"/>
+        <result column="scanRequire" property="scanRequire"/>
+        <result column="scanListStatus" property="scanStatus"/>
+        <result column="scanListResult" property="scanResult"/>
+        <result column="scanRelation" property="scanRelation"/>
+        <result column="scanIdNum" property="scanIdNum"/>
+        <result column="scanHitReason" property="scanHitReason"/>
+    </resultMap>
+
+    <select id="listScanInfo" parameterMap="java.util.Map" resultType="ScanResultMap">
+        select ks.id scanId, ks.scanCode scanCode, kc.customerCode customerCode, kc.customerName customerName, ks.scanStatus scanStatus,
+        ks.scanTime scanTime, ks.scanResult scanResult, ks.processStatus processStatus, ks.scanListType scanListType,
+        ks.templateCode tempalteCode, kci.uscCode uscCode, kci.idNum idNum, ksc.handleReason handleReason from kyc_scan ks join kyc_customer kc
+        join kyc_customer_relation kcr join kyc_customer_info kci join kyc_scan_except ksc on ks.customerCode=kc.customerCode and kc.id=kcr.customerId
+        and kcr.customerInfoId=kci.id and kc.scanCode=ksc.scanCode where 1=1
+         <if test="scanCode!=null and scanCode!=''">
+             and ks.scanCode=#{scanCode}
+         </if>
+         <if test="customerCode!=null and customerCode!=''">
+             and ks.customerCode=#{customerCode} and kc.customerCode=#{customerCode}
+         </if>
+         <if test="customerName!=null and customerName!=''">
+             and kc.customerName like concat ('%', #{customerName}, '%')
+         </if>
+         <if test="uscCode!=null and uscCode!=''">
+             and kci.uscCode=#{uscCode}
+         </if>
+         <if test="scanStatus!=null and scanStatus!=''">
+             and ks.scanStatus=#{scanStatus}
+         </if>
+         <if test="scanResult!=null and scanResult!=''">
+             and ks.scanResult=#{scanResult}
+         </if>
+         <if test="processStatus!=null and processStatus!=''">
+             and ks.processStatus=#{processStatus}
+         </if>
+         <if test="scanListType!=null and scanListType!=''">
+             and ks.scanListType=#{scanListType}
+         </if>
+    </select>
+
+    <select id="listScanListInfo" resultMap="ScanListResultMap">
+        select id scanListId, scanCode scanCode, scanMain scanMain, scanRequire scanRequire, scanStatus scanStatus, scanResult scanResult,
+        scanRelation scanRelation, scanIdNum scanIdNum, sanHitReason scanHitReason from kyc_scan_list where scanCode=#{scanCode}
+    </select>
+    
+    <insert id="addScanInfo" parameterMap="com.kyc.model.customer.Scan">
+        insert into kyc_scan(`scanCode`, `customerCode`, `scanStatus`, `scanTime`, `scanResult`, `processStatus`, `scanListType`, `templateCode`)
+        value (#{scan.scanCode}, #{scan.customerCode}, #{scan.scanStatus}, #{scan.scanTime}, #{scan.scanResult}, #{scan.processStatus}, #{scan.scanListType},
+        #{scan.templateCode})
+    </insert>
+
+    <select id="listScanCheck" parameterType="java.util.Map">
+        select ks.scanCode scanCode, ks.customerCode customerCode, kci.uscCode uscCode, kci.idNum idNum, ks.checkStatus checkStatus,
+        ks.checkOpinion checkOpinion, ks.checker checker, ks.checkTime checkTime from kyc_scan ks join kyc_customer ks join kyc_scan_except kse
+        join kyc_customer_relation kcr join kyc_customer_info kci on ks.scanCode=kse.scanCode and ks.customerCode=kc.customerCode and kc.id=kcr.customerId
+        and kcr.customerInfoId=kci.id where 1=1
+        <if test="scanCode!=null and scanCode!=''">
+            and ks.scanCode=#{scanCode}
+        </if>
+        <if test="customerCode!=null and customerCode!=''">
+            and kc.customerCode=#{customerCode}
+        </if>
+        <if test="customerName!=null and customerName!=''">
+            and kc.customerName=#{customerName}
+        </if>
+        <if test="checkTime!=null and checkTime!=''">
+            and kse.checkTime=#{checkTime}
+        </if>
+        <if test="checkStatus!=null and checkStatus!=''">
+            and kse.checkStatus=#{checkStatus}
+        </if>
+    </select>
+    
+    <update id="batchUpdateScanStatus" parameterType="java.util.Map">
+        update kyc_scan_except
+        <trim prefix="set" suffixOverrides=",">
+            <if test="map!=ull">
+                <if test="checkStatus!=null and checkStatus!=''">
+                    checkStatus=#{checkStatus},
+                </if>
+                <if test="checkOpinion!=null and checkOpinion!=''">
+                    checkOpinion=#{checkOpinion},
+                </if>
+            </if>
+        </trim>
+        where scanCode in
+        <foreach collection="scans" item="scan" separator="," open="(" close=")">
+            #{scan}
+        </foreach>
+    </update>
+
+    <select id="listCustomerBasic" parameterMap="com.kyc.model.customer.Scan" resultType="java.util.Map">
+        select kc.customerCode customerCode, kc.customerName customerName, kci.uscCode uscCode, kci.name name, kci.idNum idNum, kci.telNum telNum
+        from kyc_customer kc join kyc_customer_info kci join kyc_customer_relation kcr on kc.id=kcr.customerId and kcr.customerInfoId=kci.id
+        where kc.customerCode=#{scan.customerCode}
+    </select>
+
+    <select id="listScanLists" parameterType="com.kyc.model.customer.Scan" resultType="com.kyc.model.customer.ScanList">
+        select ksl.scanMain scanMain, ksl.templateCode templateCode, ksl.scanRequire scanrRequire, ksl.scanStatus scanStatus, ksl.scanResult scanResult,
+        ksl.scanHitReason scanHitReason, ksl.scanRelation scanRelation, ksl.scanIdNum scanIdNum from kyc_scan_list ksl where ksl.scanCode=#{scan.scanCode}
+    </select>
+
+    <select id="listScanExcept" parameterType="com.kyc.model.customer.Scan" resultType="com.kyc.model.customer.ScanExcept">
+        select kce.exceptHandle exceptHandle, kce.handleReason handleReason, kce.attachment attachment, kce.sponsor sponsor, kce.submitTime submitTime
+        from kyc_scan_except kce where kce.scanCode=#{scan.scanCode}
+    </select>
+
+</mapper>

@@ -38,4 +38,14 @@ public class Customer implements Serializable {
     private String customerStatus;
 
     private String customerMode;
+
+    private String startTime;
+
+    private String endTime;
+
+    private String valid;
+
+    private String uscCode;
+
+    private String idNum;
 }

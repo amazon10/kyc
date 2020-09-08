@@ -29,10 +29,10 @@ public class CustomerServiceImpl implements CustomerService {
     CustomerMapper customerMapper;
 
     @Override
-    public List<KycCustomer> listCustomerInfo(KycCustomer kycCustomer, Integer pageNo, Integer pageSize) {
+    public List<KycCustomer> listCustomers(KycCustomer kycCustomer, Integer pageNo, Integer pageSize) {
         PageHelper.startPage(pageNo, pageSize);
 
-        return customerMapper.listCustomerInfo(kycCustomer);
+        return customerMapper.listCustomers(kycCustomer);
     }
 
     @Override
@@ -98,5 +98,20 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         return result;
+    }
+
+    @Override
+    public Map<String, Integer> customerPushStatusCount(String mode) {
+        return customerMapper.customerPushStatusCount(mode);
+    }
+
+    @Override
+    public Integer updateQueryRelation(CustomerInfo customerInfo) {
+        return customerMapper.updateQueryRelation(customerInfo);
+    }
+
+    @Override
+    public Integer addQueryRelation(CustomerInfo customerInfo) {
+        return customerMapper.addQueryRelation(customerInfo);
     }
 }

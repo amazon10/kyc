@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kyc.mapper.customer.PenetrateMapper">
+    <select id="customerpenetrateCount">
+        select penetrateStatus, count(id) from kyc_penetrate group by penetrateStatus
+    </select>
+
+    <select id="listCustomerPenetrateInfo" parameterMap="java.util.Map" resultMap="java.util.Map">
+        select kp.id id, kp.penetrateCode penetrateCode, kc.customerCode customerCode, kc.customerName customerName, kc.customerStatus customerStatus,
+        kp.penetrateType penetrateType, kp.penetrateStatus penetrateStatus, kp.penetrateTime penetrateTime, kp.processStatus processStatus
+        from kyc_penetrate kp join kyc_customer kc on kp.customerCode=kc.customerCode where 1=1
+        <if test="customerCode!=null and customerCode!=''">
+            and kc.customerCode=#{customerCode} and kp.customerCode=#{customerCode}
+        </if>
+        <if test="industry!=null and industry!=''">
+            and kc.industry=#{industry}
+        </if>
+        <if test="customerType!=null and customerType!=''">
+            and kc.customerType=#{customerType}
+        </if>
+        <if test="customerStatus!=null and customerStatus!=''">
+            and kc.customerStatus=#{customerStatus}
+        </if>
+        <if test="channel!=null and channel!=''">
+            and kc.channel=#{channel}
+        </if>
+        <if test="customerProcess!=null and customerProcess!=''">
+            and kc.processStatus=#{customerProcess}
+        </if>
+        <if test="customerName!=null and customerName!=''">
+            and kc.customerName=#{customerName}
+        </if>
+        <if test="area!=null and area!=''">
+            and kc.area=#{area}
+        </if>
+        <if test="customerLevel!=null and customerLevel!=''">
+            and kc.customerLevel=#{customerLevel}
+        </if>
+        <if test="penetrateStatus!=null and penetrateStatus!=''">
+            and kp.penetrateStatus=#{penetrateStatus}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and kp.penetrateTime &gt; #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and kp.penetrateTime &lt; #{endTime}
+        </if>
+        <if test="penetrateType!=null and penetrateType!=''">
+            and kp.penetrateType=#{penetrateType}
+        </if>
+        <if test="penetrateProcess!=null and penetrateProcess!=''">
+            and kp.processStatus=#{penetrateProcess}
+        </if>
+    </select>
+
+    <insert id="addCustomerPenetrateInfo" parameterMap="java.util.Map">
+        insert into kyc_penetrate (`penetrateCode`, `customerCode`, `penetrateType`, `penetrateStatus`, `penetrateTime`, `processStatus`,
+        `templateCode`) values
+         <foreach collection="list" item="map" separator=",">
+             (#{penetrateCode}, #{customerCode}, #{penetrateType}, #{penetrateStatus}, #{penetrateTime}, #{processStatus},
+             #{templateCode})
+         </foreach>
+    </insert>
+</mapper>
